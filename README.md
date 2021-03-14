@@ -32,9 +32,9 @@ Automation tools for competitive programming.
 
 - URL の形式 : https://atcoder.jp/contests/{contest_name}/tasks/{contest_name}_{id}
 
-- id は 6 問なら a~f
+- id は 6 問なら a-f
 
-- 太古の問題は a~f の部分が 1~4 だったりする
+- 太古の問題は a-f の部分が 1-4 だったりする
   - つらい　どうしてこんなことに
   - 対策 : 太古の問題は、解かない！
 
