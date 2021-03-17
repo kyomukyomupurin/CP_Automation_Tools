@@ -1,24 +1,30 @@
 from pathlib import Path
 import subprocess
+import re
 
 
 def check_sample():
-    subprocess.run(["make", "taskA"])
+    task_id = Path(".").name
+    subprocess.run(["make", f"task{task_id}"])
     number = 1
+    passed = True
     while Path(f"input{number}.txt").exists():
-        subprocess.run("./taskA", check=True, stdin=Path("input{number}.txt").open("r"), stdout=Path(f"answer{number}.txt").open("w"))
-        print("fSample{number}... ", end='')
-        if Path(f"output{number}.txt").read_text().strip(" \n") != Path(f"answer{number}.txt").read_text().strip(" \n"):
+        subprocess.run(f"./task{task_id}", check=True, stdin=Path(f"input{number}.txt").open("r"), stdout=Path(f"answer{number}.txt").open("w"))
+        print(f"Sample{number}... ", end='')
+        if re.sub(" +", ' ', Path(f"output{number}.txt").read_text().replace('\n', ' ')).strip(' ') != re.sub(" +", ' ', Path(f"answer{number}.txt").read_text().replace('\n', ' ')).strip(' '):
             print("NG")
             print("Input : ")
-            subprocess.run(["cat", f"input{number}.txt"])
+            print(Path(f"input{number}.txt").read_text())
             print("Expected : ")
-            subprocess.run(["cat", f"output{number}.txt"])
+            print(Path(f"output{number}.txt").read_text())
             print("Found : ")
-            subprocess.run(["cat", f"answer{number}.txt"])
+            print(Path(f"answer{number}.txt").read_text())
+            passed = False
         else:
             print("OK")
         number += 1
+    if passed:
+        print("Passed all tests!")
 
 if __name__ == "__main__":
     check_sample()
