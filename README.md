@@ -32,6 +32,10 @@ Automation tools for competitive programming.
 
 - URL の形式 : https://atcoder.jp/contests/{contest_name}/tasks/{contest_name}_{id}
 
+- {contest_name} の文字列に - が含まれてるときは {contest_name}_{id} の部分では - を _ に置換する必要がある
+
+- ABC 級と ARC 級の企業コンが同時開催されてると URL と id の規則性がちょっと複雑
+
 - id は 6 問なら a-f
 
 - 太古の問題は a-f の部分が 1-4 だったりする
