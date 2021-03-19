@@ -12,23 +12,23 @@ def save_sample(problem_id: str):
         return
     bs = BeautifulSoup(response.text, "html.parser")
     print(bs.title.get_text())
-    Path(f"{contest_name}/{problem_id.upper()}").mkdir()
+    Path(f"{contest_name}/{problem_id}").mkdir()
     number = 1
-    for h3_tag in bs.find_all("h3"):
-        h3_text = h3_tag.get_text()
+    for h3 in bs.find_all("h3"):
+        h3_text = h3.get_text()
         if h3_text.startswith("Sample Input"):
             print(h3_text)
-            print(h3_tag.next_sibling.get_text())
-            Path(f"{contest_name}/{problem_id.upper()}/input{number}.txt").write_text(
-                h3_tag.next_sibling.get_text())
+            print(h3.next_sibling.get_text())
+            Path(f"{contest_name}/{problem_id}/input{number}.txt").write_text(
+                h3.next_sibling.get_text())
         elif h3_text.startswith("Sample Output"):
             print(h3_text)
-            print(h3_tag.next_sibling.get_text())
-            Path(f"{contest_name}/{problem_id.upper()}/output{number}.txt").write_text(
-                h3_tag.next_sibling.get_text())
+            print(h3.next_sibling.get_text())
+            Path(f"{contest_name}/{problem_id}/output{number}.txt").write_text(
+                h3.next_sibling.get_text())
             number += 1
-    Path(f"{contest_name}/{problem_id.upper()}/task{problem_id.upper()}.cc").touch()
-    Path(f"{contest_name}/{problem_id.upper()}/Makefile").touch()
+    Path(f"{contest_name}/{problem_id}/task{problem_id}.cc").touch()
+    Path(f"{contest_name}/{problem_id}/Makefile").touch()
 
 
 if __name__ == "__main__":
@@ -36,12 +36,12 @@ if __name__ == "__main__":
     parser.add_argument("contest_url")
     args = parser.parse_args()
     contest_url = args.contest_url
-    contest_name = contest_url.split("/")[-1]
+    contest_name = contest_url.split("/")[-1].replace("-", "_")
     print(f"Contest : Name : {contest_name}")
     Path(contest_name).mkdir()
 
     problems_number = 6
 
     for num in range(problems_number):
-        save_sample(chr(ord("a") + num))
+        save_sample(chr(ord("A") + num))
         sleep(1.0)
