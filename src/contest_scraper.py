@@ -5,7 +5,7 @@ from pathlib import Path
 from time import sleep
 
 
-def save_sample(problem_id: str):
+def save_sample(problem_id: str) -> None:
     response = requests.get(f"{contest_url}/tasks/{contest_name}_{problem_id}")
     if response.status_code != 200:
         print("Error")
@@ -15,7 +15,7 @@ def save_sample(problem_id: str):
     Path(f"{contest_name}/{problem_id}").mkdir()
     number = 1
     for h3 in bs.find_all("h3"):
-        h3_text = h3.get_text()
+        h3_text: str = h3.get_text()
         if h3_text.startswith("Sample Input"):
             print(h3_text)
             print(h3.next_sibling.get_text())
@@ -35,9 +35,9 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("contest_url")
     args = parser.parse_args()
-    contest_url = args.contest_url
+    contest_url: str = args.contest_url
     contest_name = contest_url.split("/")[-1].replace("-", "_")
-    print(f"Contest : Name : {contest_name}")
+    print(f"{contest_name=}")
     Path(contest_name).mkdir()
 
     problems_number = 6

@@ -3,7 +3,7 @@ import subprocess
 import re
 
 
-def check_sample():
+def check_sample() -> None:
     task_id = Path(".").name
     subprocess.run(["make", f"task{task_id}"])
     number = 1
