@@ -3,6 +3,7 @@ from bs4 import BeautifulSoup
 import argparse
 from pathlib import Path
 from time import sleep
+import string
 
 
 def save_sample(problem_id: str) -> None:
@@ -42,6 +43,6 @@ if __name__ == "__main__":
 
     problems_number = 6
 
-    for num in range(problems_number):
-        save_sample(chr(ord("A") + num))
+    for char in string.ascii_uppercase[:problems_number]:
+        save_sample(char)
         sleep(1.0)
