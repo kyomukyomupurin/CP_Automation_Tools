@@ -3,6 +3,8 @@ Automation tools for competitive programming.
 
 競プロでサンプル入出力の取得、サンプルのチェック、提出等を自動化するツール
 
+パスの扱いは Linux 環境を想定
+
 ## 追加していく機能
 
 - サンプル入出力の取得・保存
@@ -23,16 +25,17 @@ Automation tools for competitive programming.
 
 #### コンテスト情報
 
-- URL の形式 : https://atcoder.jp/contests/{contest_name}
+- URL の形式 : https://atcoder.jp/contests/{contest}
 
 - 問題数を取得するのが地味にむずい
   - 6 問で決め打ちでもあまり困らないかも？
 
 #### サンプル入出力の取得
 
-- URL の形式 : https://atcoder.jp/contests/{contest_name}/tasks/{contest_name}_{id}
+- URL の形式 : https://atcoder.jp/contests/{contest}/tasks/{contest}_{id}
 
-- {contest_name} の文字列に - が含まれてるときは {contest_name}_{id} の部分では - を _ に置換する必要がある
+- 文字列 {contest} に - が含まれてるときは {contest}_{id} の部分では - を _ に置換する必要がある
+  - 例 : https://atcoder.jp/contests/m-solutions2020/tasks/m_solutions2020_a
 
 - ABC 級と ARC 級の企業コンが同時開催されてると URL と id の規則性がちょっと複雑
 
