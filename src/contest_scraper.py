@@ -5,6 +5,7 @@ from pathlib import Path
 from time import sleep
 import string
 import shutil
+import subprocess
 
 
 def save_sample(id: str) -> None:
@@ -26,10 +27,10 @@ def save_sample(id: str) -> None:
             Path(f"{contest}/{id}/sample/output{number}.txt").write_text(
                 h3.find_next_sibling("pre").get_text())
             number += 1
-    print("OK")
+    print(" OK")
     shutil.copy(Path("template.cc"), Path(f"{contest}/{id}/task{id}.cc"))
     shutil.copy(Path("Makefile"), Path(f"{contest}/{id}/Makefile"))
-
+    subprocess.Popen(["make", "-s", "-C", f"{contest}/{id}", "run"])
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
