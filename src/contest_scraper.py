@@ -30,7 +30,8 @@ def save_sample(id: str) -> None:
     print(" OK")
     shutil.copy(Path("template.cc"), Path(f"{contest}/{id}/task{id}.cc"))
     shutil.copy(Path("Makefile"), Path(f"{contest}/{id}/Makefile"))
-    subprocess.Popen(["make", "-s", "-C", f"{contest}/{id}", "run"])
+    if id == "A":
+        subprocess.Popen(["make", "-s", "-C", f"{contest}/{id}", "run"])
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
@@ -42,4 +43,6 @@ if __name__ == "__main__":
     number_of_tasks = 6
     for task_id in string.ascii_uppercase[:number_of_tasks]:
         save_sample(task_id)
-        sleep(1.0)
+        if task_id != string.ascii_uppercase[number_of_tasks - 1]:
+            sleep(1.0)
+    Path("taskA").unlink()
