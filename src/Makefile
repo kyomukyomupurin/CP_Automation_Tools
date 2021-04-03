@@ -9,3 +9,6 @@ run: task$(DIR).cc
 test:
 	@make -s run
 	@$(PYTHON) ./../../sample_checker.py
+
+submit:
+	@$(PYTHON) ./../../submit.py
