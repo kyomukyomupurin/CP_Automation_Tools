@@ -34,8 +34,9 @@ Automation tools for competitive programming.
 
 - URL の形式 : https://atcoder.jp/contests/{contest}/tasks/{contest}_{id}
 
-- TO DO : 文字列 {contest} に - が含まれてるときは {contest}_{id} の部分では - を _ に置換する必要がある
+-文字列 {contest} に - が含まれてるときは {contest}_{id} の部分では - を _ に置換する必要がある
   - 例 : https://atcoder.jp/contests/m-solutions2020/tasks/m_solutions2020_a
+  - ```f"contest.replace("-", "_")"``` と書くと " と " の間でパースされてエラーになるので ```replace()``` の中はシングルクォーテーションで書く必要がある(最初詰まった)
 
 - ABC 級と ARC 級の企業コンが同時開催されてると URL と id の規則性がちょっと複雑
 
