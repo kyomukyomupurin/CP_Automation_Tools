@@ -10,7 +10,7 @@ import subprocess
 
 def save_sample(id: str) -> None:
     response = requests.get(
-        f"https://atcoder.jp/contests/{contest}/tasks/{contest}_{id}")
+        f"https://atcoder.jp/contests/{contest}/tasks/{contest.replace('-', '_')}_{id}")
     if response.status_code != 200:
         print("Error")
         return
@@ -45,4 +45,4 @@ if __name__ == "__main__":
         save_sample(task_id)
         if task_id != string.ascii_uppercase[number_of_tasks - 1]:
             sleep(1.0)
-    Path("taskA").unlink()
+    Path(f"{contest}/A/taskA").unlink()
