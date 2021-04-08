@@ -11,7 +11,9 @@ import subprocess
 def save_sample(id: str) -> None:
     response = requests.get(
         f"https://atcoder.jp/contests/{contest}/tasks/{contest.replace('-', '_')}_{id}")
-    if response.status_code != 200:
+    try:
+        response.raise_for_status()
+    except:
         print("Error")
         return
     bs = BeautifulSoup(response.text, "html.parser")
