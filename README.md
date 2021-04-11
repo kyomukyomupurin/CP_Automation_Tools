@@ -5,11 +5,12 @@ Automation tools for competitive programming.
 
 パスの扱いは Linux 環境を想定
 
-## 追加していく機能
+## 機能
 
-- サンプル入出力の取得・保存
+- ログイン
+- サンプル入出力のダウンロード
 - サンプルが合うかチェック
-- コマンドラインから提出
+- 提出
 
 ## 対応するサイト(予定)
 
@@ -34,7 +35,7 @@ Automation tools for competitive programming.
 
 - URL の形式 : https://atcoder.jp/contests/{contest}/tasks/{contest}_{id}
 
--文字列 {contest} に - が含まれてるときは {contest}_{id} の部分では - を _ に置換する必要がある
+- 文字列 {contest} に ```-``` が含まれてるときは {contest}_{id} の部分では ```-``` を ```_``` に置換する必要がある
   - 例 : https://atcoder.jp/contests/m-solutions2020/tasks/m_solutions2020_a
   - ```f"contest.replace("-", "_")"``` と書くと " と " の間でパースされてエラーになるので ```replace()``` の中はシングルクォーテーションで書く必要がある(最初詰まった)
 
@@ -51,7 +52,7 @@ Automation tools for competitive programming.
   - とはいえ、ソースコードに日本語を書くのは気が進まない
   - 対策 : 太古の問題は、解かない！
 
-### サンプルのチェック
+#### サンプルのチェック
 
 - 余分な空白、改行は許容してチェックする必要がある
   - まず ```"\n"``` を ```" "``` に置換
@@ -68,9 +69,8 @@ Automation tools for competitive programming.
 - 実行時間制限はとりあえず 2 秒で決め打ち
   - TO DO : html ソースから情報を抜く
 
-### ログインと提出
+#### ログインと提出
 
 - ```requests.Session()``` でできる
-- csrf token の有効期限がよくわかってない
-  - ログイン時と提出時の csrf token は一緒でいいのか？
-  - ググって出てきた実装ではログイン時と提出時には別々に取得しているものが多かったのでとりあえずその方針でやる
+- csrf token はセキュリティのためのワンタイムトークン(Cookie とは別物)
+- ログイン時に Cookie を取得してローカルに保存しておく(有効期限は半年くらい？)
