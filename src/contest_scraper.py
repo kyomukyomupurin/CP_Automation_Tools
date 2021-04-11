@@ -9,12 +9,12 @@ import subprocess
 
 
 def save_sample(id: str) -> None:
-    response = requests.get(
-        f"https://atcoder.jp/contests/{contest}/tasks/{contest.replace('-', '_')}_{id}")
+    problem_url = f"https://atcoder.jp/contests/{contest}/tasks/{contest.replace('-', '_')}_{id}"
+    response = requests.get(problem_url)
     try:
         response.raise_for_status()
     except:
-        print("Error")
+        print(f"HTTP request for \"{problem_url}\" failed.")
         return
     bs = BeautifulSoup(response.text, "html.parser")
     print(f"Saving task{id}...", end="")
@@ -30,10 +30,12 @@ def save_sample(id: str) -> None:
                 h3.find_next_sibling("pre").get_text())
             number += 1
     print(" OK")
-    shutil.copy(Path("template.cc"), Path(f"{contest}/{id}/task{id}.cc"))
-    shutil.copy(Path("Makefile"), Path(f"{contest}/{id}/Makefile"))
+    shutil.copy(Path(".template/template.cc"),
+                Path(f"{contest}/{id}/task{id}.cc"))
+    shutil.copy(Path(".template/Makefile"), Path(f"{contest}/{id}/Makefile"))
     if id == "A":
         subprocess.Popen(["make", "-s", "-C", f"{contest}/{id}", "run"])
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()

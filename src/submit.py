@@ -12,7 +12,7 @@ def submit() -> None:
     try:
         response.raise_for_status()
     except:
-        print("Error")
+        print(f"HTTP request for \"{submit_url}\" failed.")
         return
     bs = BeautifulSoup(response.text, "html.parser")
     token: str = bs.find(attrs={"name": "csrf_token"}).get("value")
@@ -27,6 +27,7 @@ def submit() -> None:
     except:
         print("Failed to submit...")
         return
+    print("Successfully submitted!")
 
 
 if __name__ == "__main__":
