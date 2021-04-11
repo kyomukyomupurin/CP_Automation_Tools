@@ -3,6 +3,7 @@ from bs4 import BeautifulSoup
 from getpass import getpass
 
 
+HOME_URL = "https://atcoder.jp"
 LOGIN_URL = "https://atcoder.jp/login"
 
 
@@ -18,7 +19,6 @@ def login() -> None:
         return
     bs = BeautifulSoup(response.text, "html.parser")
     token: str = bs.find(attrs={"name": "csrf_token"}).get("value")
-    print(token)
     payload = {"username": username,
                "password": password,
                "csrf_token": token
@@ -29,9 +29,15 @@ def login() -> None:
     except:
         print("Failed to login...")
         return
-    print("Successfully logged in!")
-    print(f"Welcome, {username}.")
 
+    # Confirm login
+    response = session.get(HOME_URL)
+    bs = BeautifulSoup(response.text, "html.parser")
+    if bs.find("a", href=f"/users/{username}") is None:
+        print("Failed to login...")
+    else:
+        print("Successfully logged in!")
+        print(f"Welcome, {username}")
 
 if __name__ == "__main__":
     login()
