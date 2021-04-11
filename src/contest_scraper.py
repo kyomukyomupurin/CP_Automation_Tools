@@ -6,11 +6,23 @@ from time import sleep
 import string
 import shutil
 import subprocess
+from http.cookiejar import LWPCookieJar
+
+
+COOKIE_SAVE_LOCATION = "cookie.txt"
 
 
 def save_sample(id: str) -> None:
     problem_url = f"https://atcoder.jp/contests/{contest}/tasks/{contest.replace('-', '_')}_{id}"
-    response = requests.get(problem_url)
+    session = requests.Session()
+    if not Path(COOKIE_SAVE_LOCATION).exists():
+        print("Please login before download samples")
+        return
+    else:
+        cookiejar = LWPCookieJar(COOKIE_SAVE_LOCATION)
+        cookiejar.load()
+        session.cookies.update(cookiejar)
+    response = session.get(problem_url)
     try:
         response.raise_for_status()
     except:
@@ -43,7 +55,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
     contest: str = args.contest
     print(f"{contest=}")
-    Path(contest).mkdir()
+    # Path(contest).mkdir()
     number_of_tasks = 6
     for task_id in string.ascii_uppercase[:number_of_tasks]:
         save_sample(task_id)

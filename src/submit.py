@@ -1,6 +1,10 @@
 import requests
 from bs4 import BeautifulSoup
 from pathlib import Path
+from http.cookiejar import LWPCookieJar
+
+
+COOKIE_SAVE_LOCATION = "./../../cookie.txt"
 
 
 def submit() -> None:
@@ -8,6 +12,13 @@ def submit() -> None:
     contest, task_id = directory_path[-2], directory_path[-1]
     submit_url = f"https://atcoder.jp/contests/{contest}/submit"
     session = requests.Session()
+    if not Path(COOKIE_SAVE_LOCATION).exists():
+        print("Please login before submit.")
+        return
+    else:
+        cookiejar = LWPCookieJar(COOKIE_SAVE_LOCATION)
+        cookiejar.load()
+        session.cookies.update(cookiejar)
     response = session.get(submit_url)
     try:
         response.raise_for_status()
