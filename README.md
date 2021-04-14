@@ -16,8 +16,6 @@ Automation tools for competitive programming.
 
 - AtCoder
 - Codeforces
-- AOJ
-- yosupo judge
 - LeetCode
 
 ## 実装メモ
