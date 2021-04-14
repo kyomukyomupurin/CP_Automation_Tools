@@ -24,7 +24,7 @@ def check_sample() -> None:
             print("OK")
         number += 1
     if passed:
-        print("Passed all tests!")
+        print("Passed all sample cases!")
 
 
 if __name__ == "__main__":

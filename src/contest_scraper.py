@@ -7,6 +7,7 @@ import string
 import shutil
 import subprocess
 from http.cookiejar import LWPCookieJar
+import logging
 
 
 COOKIE_SAVE_LOCATION = "cookie.txt"
@@ -16,20 +17,20 @@ def save_sample(id: str) -> None:
     problem_url = f"https://atcoder.jp/contests/{contest}/tasks/{contest.replace('-', '_')}_{id}"
     session = requests.Session()
     if not Path(COOKIE_SAVE_LOCATION).exists():
-        print("Please login before download samples")
+        logging.warning(" Please login before downloading problems.")
         return
     else:
         cookiejar = LWPCookieJar(COOKIE_SAVE_LOCATION)
         cookiejar.load()
+        logging.info(" Loaded an exsisting cookie from \"%s\"", COOKIE_SAVE_LOCATION)
         session.cookies.update(cookiejar)
     response = session.get(problem_url)
     try:
         response.raise_for_status()
     except:
-        print(f"HTTP request for \"{problem_url}\" failed.")
+        logging.error(" HTTP request for \"%s\" failed.", problem_url)
         return
     bs = BeautifulSoup(response.text, "html.parser")
-    print(f"Saving task{id}...", end="")
     Path(f"{contest}/{id}/sample").mkdir(parents=True)
     number = 1
     for h3 in bs.find_all("h3"):
@@ -41,21 +42,21 @@ def save_sample(id: str) -> None:
             Path(f"{contest}/{id}/sample/output{number}.txt").write_text(
                 h3.find_next_sibling("pre").get_text())
             number += 1
-    print(" OK")
     shutil.copy(Path(".template/template.cc"),
                 Path(f"{contest}/{id}/task{id}.cc"))
     shutil.copy(Path(".template/Makefile"), Path(f"{contest}/{id}/Makefile"))
+    logging.info(" Saved task%s", id)
     if id == "A":
         subprocess.Popen(["make", "-s", "-C", f"{contest}/{id}", "run"])
 
 
 if __name__ == "__main__":
+    logging.basicConfig(format="%(levelname)s:%(message)s", level=logging.INFO)
     parser = argparse.ArgumentParser()
     parser.add_argument("contest")
     args = parser.parse_args()
     contest: str = args.contest
     print(f"{contest=}")
-    # Path(contest).mkdir()
     number_of_tasks = 6
     for task_id in string.ascii_uppercase[:number_of_tasks]:
         save_sample(task_id)

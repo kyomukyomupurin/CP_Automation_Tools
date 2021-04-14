@@ -2,6 +2,7 @@ import requests
 from bs4 import BeautifulSoup
 from pathlib import Path
 from http.cookiejar import LWPCookieJar
+import logging
 
 
 COOKIE_SAVE_LOCATION = "./../../cookie.txt"
@@ -13,17 +14,18 @@ def submit() -> None:
     submit_url = f"https://atcoder.jp/contests/{contest}/submit"
     session = requests.Session()
     if not Path(COOKIE_SAVE_LOCATION).exists():
-        print("Please login before submit.")
+        logging.error(" Please login before submission.")
         return
     else:
         cookiejar = LWPCookieJar(COOKIE_SAVE_LOCATION)
         cookiejar.load()
+        logging.info(" Loaded an exsisting cookie from \"%s\"", COOKIE_SAVE_LOCATION)
         session.cookies.update(cookiejar)
     response = session.get(submit_url)
     try:
         response.raise_for_status()
     except:
-        print(f"HTTP request for \"{submit_url}\" failed.")
+        logging.error(" HTTP request for \"%s\" failed.", submit_url)
         return
     bs = BeautifulSoup(response.text, "html.parser")
     token: str = bs.find(attrs={"name": "csrf_token"}).get("value")
@@ -36,10 +38,11 @@ def submit() -> None:
     try:
         result.raise_for_status()
     except:
-        print("Failed to submit...")
+        logging.error(" Failed to submit.")
         return
-    print("Successfully submitted!")
+    logging.info(" Successfully submitted!")
 
 
 if __name__ == "__main__":
+    logging.basicConfig(format="%(levelname)s:%(message)s", level=logging.INFO)
     submit()

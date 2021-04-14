@@ -2,6 +2,7 @@ import requests
 from bs4 import BeautifulSoup
 from getpass import getpass
 from http.cookiejar import LWPCookieJar
+import logging
 
 
 HOME_URL = "https://atcoder.jp"
@@ -18,7 +19,7 @@ def login() -> None:
     try:
         response.raise_for_status()
     except:
-        print(f"HTTP request for \"{LOGIN_URL}\" failed.")
+        logging.error(" HTTP request for \"%s\" failed.", LOGIN_URL)
         return
     bs = BeautifulSoup(response.text, "html.parser")
     token: str = bs.find(attrs={"name": "csrf_token"}).get("value")
@@ -30,23 +31,24 @@ def login() -> None:
     try:
         result.raise_for_status()
     except:
-        print("Failed to login...")
+        logging.error(" Failed to login.")
         return
 
     # Confirm login
     response = session.get(HOME_URL)
     bs = BeautifulSoup(response.text, "html.parser")
     if bs.find("a", href=f"/users/{username}") is None:
-        print("Failed to login...")
+        logging.error(" Failed to login.")
         return
     else:
-        print("Successfully logged in!")
-        print(f"Welcome, {username}")
-    # Update cookie
+        logging.info(" Successfully logged in.")
+        print(f"Welcome, {username}.")
     for cookie in session.cookies:
         cookiejar.set_cookie(cookie)
     cookiejar.save()
+    logging.info(" Saved cookie to \"%s\".", COOKIE_SAVE_LOCATION)
 
 
 if __name__ == "__main__":
+    logging.basicConfig(format="%(levelname)s:%(message)s", level=logging.INFO)
     login()
