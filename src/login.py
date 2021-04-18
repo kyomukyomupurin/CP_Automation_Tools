@@ -3,6 +3,7 @@ from bs4 import BeautifulSoup
 from getpass import getpass
 from http.cookiejar import LWPCookieJar
 import logging
+from datetime import datetime
 
 
 HOME_URL = "https://atcoder.jp"
@@ -19,7 +20,7 @@ def login() -> None:
     try:
         response.raise_for_status()
     except:
-        logging.error(" HTTP request for \"%s\" failed.", LOGIN_URL)
+        logging.error(" HTTP request for [%s] failed.", LOGIN_URL)
         return
     bs = BeautifulSoup(response.text, "html.parser")
     token: str = bs.find(attrs={"name": "csrf_token"}).get("value")
@@ -33,7 +34,6 @@ def login() -> None:
     except:
         logging.error(" Failed to login.")
         return
-
     # Confirm login
     response = session.get(HOME_URL)
     bs = BeautifulSoup(response.text, "html.parser")
@@ -47,7 +47,9 @@ def login() -> None:
         cookiejar.set_cookie(cookie)
     cookiejar.save()
     logging.info(" Saved cookie to \"%s\".", COOKIE_SAVE_LOCATION)
-
+    logging.info(" This cookie expires at %s.", )
+    for cookie in cookiejar:
+        logging.info(" This cookie expires at %s", datetime.fromtimestamp(float(str(cookie.expires))))
 
 if __name__ == "__main__":
     logging.basicConfig(format="%(levelname)s:%(message)s", level=logging.INFO)

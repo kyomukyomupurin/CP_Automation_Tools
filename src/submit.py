@@ -3,6 +3,7 @@ from bs4 import BeautifulSoup
 from pathlib import Path
 from http.cookiejar import LWPCookieJar
 import logging
+from datetime import datetime
 
 
 COOKIE_SAVE_LOCATION = "./../../cookie.txt"
@@ -20,12 +21,14 @@ def submit() -> None:
         cookiejar = LWPCookieJar(COOKIE_SAVE_LOCATION)
         cookiejar.load()
         logging.info(" Loaded an exsisting cookie from \"%s\"", COOKIE_SAVE_LOCATION)
+        for cookie in cookiejar:
+            logging.info(" This cookie expires at %s", datetime.fromtimestamp(float(str(cookie.expires))))
         session.cookies.update(cookiejar)
     response = session.get(submit_url)
     try:
         response.raise_for_status()
     except:
-        logging.error(" HTTP request for \"%s\" failed.", submit_url)
+        logging.error(" HTTP request for [%s] failed.", submit_url)
         return
     bs = BeautifulSoup(response.text, "html.parser")
     token: str = bs.find(attrs={"name": "csrf_token"}).get("value")
