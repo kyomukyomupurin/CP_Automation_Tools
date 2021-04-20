@@ -7,7 +7,7 @@ using int64 = long long;
 #define ALL(v) std::begin(v), std::end(v)
 #define RALL(v) std::rbegin(v), std::rend(v)
 
-inline void YES(bool cond) noexcept { std::cout << (cond ? "Yes" : "No") << '\n'; }
+inline void Yes(bool cond) noexcept { std::cout << (cond ? "Yes" : "No") << '\n'; }
 
 int main() {
   std::ios_base::sync_with_stdio(false);
