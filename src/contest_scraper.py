@@ -74,20 +74,18 @@ def save_sample(id: str) -> None:
                     allowable_error: str = var.get_text(strip=True).replace(" ", "").strip("()")
                     if pattern.fullmatch(allowable_error):
                         Path(f"{contest}/{id}/allowable_error.txt").write_text(re.split('[{}]', allowable_error)[1])
-    if flag_YesNo:
+    if flag_YesNo and Path(".template/template_YesNo.cc").exists():
         shutil.copy(Path(".template/template_YesNo.cc"), Path(f"{contest}/{id}/task{id}.cc"))
-    elif flag_YESNO:
+    elif flag_YESNO and Path(".template/template_YESNO.cc").exists():
         shutil.copy(Path(".template/template_YESNO.cc"), Path(f"{contest}/{id}/task{id}.cc"))
-    elif flag_998244353:
+    elif flag_998244353 and Path(".template/template_998244353.cc").exists():
         shutil.copy(Path(".template/template_998244353.cc"), Path(f"{contest}/{id}/task{id}.cc"))
-    elif flag_1000000007:
+    elif flag_1000000007 and Path(".template/template_1000000007.cc").exists():
         shutil.copy(Path(".template/template_1000000007.cc"), Path(f"{contest}/{id}/task{id}.cc"))
     else:
         shutil.copy(Path(".template/template.cc"), Path(f"{contest}/{id}/task{id}.cc"))
     shutil.copy(Path(".template/Makefile"), Path(f"{contest}/{id}/Makefile"))
     logging.info(" Saved task%s", id)
-    if first:
-        subprocess.Popen(["make", "-s", "-C", f"{contest}/{id}", "run"])
 
 
 if __name__ == "__main__":
@@ -96,12 +94,22 @@ if __name__ == "__main__":
     parser.add_argument("contest")
     args = parser.parse_args()
     contest: str = args.contest
+    if Path(f"{contest}").exists():
+        logging.error(" %s is already exists.", contest)
+        exit(0)
     print(f"{contest=}")
-    number_of_tasks = 6
+    number_of_tasks: int = 6
     first: bool = True
     for task_id in string.ascii_uppercase[:number_of_tasks]:
         if not first:
             sleep(1.0)
         save_sample(task_id)
+        if first:
+            premake_process = subprocess.Popen(["make", "-s", "-C", f"{contest}/{task_id}", "run"])
         first = False
+    # TO DO : Pylance のエラーを消す
+    try:
+        premake_process.wait(timeout=10)
+    except subprocess.TimeoutExpired as err:
+        logging.error(" %s", err)
     Path(f"{contest}/A/taskA").unlink()
