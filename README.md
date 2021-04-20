@@ -54,6 +54,7 @@ Automation tools for competitive programming.
 
 - 出力が浮動小数点数になる問題
   - "absolute or relative error" というフレーズが問題文に含まれているかどうかで判断する
+  - TO DO : ```10^{-[0-9]}``` で判断するように書き直す
 
 #### サンプルのチェック
 
