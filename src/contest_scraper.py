@@ -6,7 +6,7 @@ from time import sleep
 import string
 import shutil
 import subprocess
-from http.cookiejar import LWPCookieJar
+from http.cookiejar import LWPCookieJar, LoadError
 import logging
 from datetime import datetime
 import re
@@ -17,26 +17,18 @@ COOKIE_SAVE_LOCATION = "cookie.txt"
 
 def save_sample(id: str) -> None:
     problem_url = f"https://atcoder.jp/contests/{contest}/tasks/{contest.replace('-', '_')}_{id}"
-    session = requests.Session()
-    if not Path(COOKIE_SAVE_LOCATION).exists():
-        logging.warning(" Please login before downloading problems.")
-        return
-    else:
-        cookiejar = LWPCookieJar(COOKIE_SAVE_LOCATION)
-        cookiejar.load()
-        if first:
-            logging.info(" Loaded an exsisting cookie from \"%s\"",
-                         COOKIE_SAVE_LOCATION)
-            for cookie in cookiejar:
-                logging.info(" This cookie expires at %s",
-                             datetime.fromtimestamp(float(str(cookie.expires))))
-        session.cookies.update(cookiejar)
     response = session.get(problem_url)
     try:
         response.raise_for_status()
+    except requests.ConnectionError as err:
+        logging.error(f" ConnectionError: {err}")
+        exit(0)
+    except requests.HTTPError as err:
+        logging.error(f" HTTPError: {err}")
+        exit(0)
     except:
-        logging.error(" HTTP request for [%s] failed.", problem_url)
-        return
+        logging.error(" An unexpected error occured.")
+        exit(0)
     bs = BeautifulSoup(response.text, "html.parser")
     flag_YesNo: bool = False
     flag_YESNO: bool = False
@@ -56,7 +48,8 @@ def save_sample(id: str) -> None:
         elif h3_text == "Output":
             codes = h3.find_next_sibling("p").find_all("code")
             vars = h3.find_next_sibling("p").find_all("var")
-            flag_float: bool = "absolute or relative error" in h3.find_next_sibling("p").get_text()
+            flag_float: bool = "absolute or relative error" in h3.find_next_sibling(
+                "p").get_text()
             pattern = re.compile(r"10\^{-[0-9]}")
             for code in codes:
                 if code.get_text(strip=True) == "YES":
@@ -71,19 +64,26 @@ def save_sample(id: str) -> None:
                 if var.get_text(strip=True) in ["1000000007", "1,000,000,007"]:
                     flag_1000000007 = True
                 if flag_float:
-                    allowable_error: str = var.get_text(strip=True).replace(" ", "").strip("()")
+                    allowable_error: str = var.get_text(
+                        strip=True).replace(" ", "").strip("()")
                     if pattern.fullmatch(allowable_error):
-                        Path(f"{contest}/{id}/allowable_error.txt").write_text(re.split('[{}]', allowable_error)[1])
+                        Path(f"{contest}/{id}/allowable_error.txt").write_text(
+                            re.split('[{}]', allowable_error)[1])
     if flag_YesNo and Path(".template/template_YesNo.cc").exists():
-        shutil.copy(Path(".template/template_YesNo.cc"), Path(f"{contest}/{id}/task{id}.cc"))
+        shutil.copy(Path(".template/template_YesNo.cc"),
+                    Path(f"{contest}/{id}/task{id}.cc"))
     elif flag_YESNO and Path(".template/template_YESNO.cc").exists():
-        shutil.copy(Path(".template/template_YESNO.cc"), Path(f"{contest}/{id}/task{id}.cc"))
+        shutil.copy(Path(".template/template_YESNO.cc"),
+                    Path(f"{contest}/{id}/task{id}.cc"))
     elif flag_998244353 and Path(".template/template_998244353.cc").exists():
-        shutil.copy(Path(".template/template_998244353.cc"), Path(f"{contest}/{id}/task{id}.cc"))
+        shutil.copy(Path(".template/template_998244353.cc"),
+                    Path(f"{contest}/{id}/task{id}.cc"))
     elif flag_1000000007 and Path(".template/template_1000000007.cc").exists():
-        shutil.copy(Path(".template/template_1000000007.cc"), Path(f"{contest}/{id}/task{id}.cc"))
+        shutil.copy(Path(".template/template_1000000007.cc"),
+                    Path(f"{contest}/{id}/task{id}.cc"))
     else:
-        shutil.copy(Path(".template/template.cc"), Path(f"{contest}/{id}/task{id}.cc"))
+        shutil.copy(Path(".template/template.cc"),
+                    Path(f"{contest}/{id}/task{id}.cc"))
     shutil.copy(Path(".template/Makefile"), Path(f"{contest}/{id}/Makefile"))
     logging.info(" Saved task%s", id)
 
@@ -98,6 +98,23 @@ if __name__ == "__main__":
         logging.error(" %s is already exists.", contest)
         exit(0)
     print(f"{contest=}")
+    session = requests.Session()
+    if not Path(COOKIE_SAVE_LOCATION).exists():
+        logging.warning(" Please login before downloading problems.")
+        exit(0)
+    else:
+        cookiejar = LWPCookieJar(COOKIE_SAVE_LOCATION)
+        try:
+            cookiejar.load()
+        except LoadError as err:
+            logging.error(f" LoadError: {err}")
+            exit(0)
+    logging.info(" Loaded an exsisting cookie from \"%s\"",
+                 COOKIE_SAVE_LOCATION)
+    for cookie in cookiejar:
+        logging.info(" This cookie expires at %s",
+                     datetime.fromtimestamp(float(str(cookie.expires))))
+    session.cookies.update(cookiejar)
     number_of_tasks: int = 6
     first: bool = True
     for task_id in string.ascii_uppercase[:number_of_tasks]:
@@ -105,11 +122,14 @@ if __name__ == "__main__":
             sleep(1.0)
         save_sample(task_id)
         if first:
-            premake_process = subprocess.Popen(["make", "-s", "-C", f"{contest}/{task_id}", "run"])
+            premake_process = subprocess.Popen(
+                ["make", "-s", "-C", f"{contest}/{task_id}", "run"])
         first = False
-    # TO DO : Pylance のエラーを消す
     try:
         premake_process.wait(timeout=10)
     except subprocess.TimeoutExpired as err:
-        logging.error(" %s", err)
-    Path(f"{contest}/A/taskA").unlink()
+        logging.error(f" TimeoutExpired: {err}")
+    try:
+        Path(f"{contest}/A/taskA").unlink()
+    except FileExistsError as err:
+        logging.error(f" FileExistsError: {err}")
