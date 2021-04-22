@@ -30,11 +30,11 @@ def handle_errors(response: requests.Response) -> None:
         sys.exit(1)
 
 
-def is_user_logged_in() -> bool:
+def is_user_logged_in(session: requests.Session) -> bool:
     response = session.get(HOME_URL)
     handle_errors(response)
     bs = BeautifulSoup(response.text, "html.parser")
-    return bs.find("a", href=f"/users/{username}") is not None
+    return bs.find("a", href=f"/settings") is not None
 
 
 def login() -> None:
@@ -48,7 +48,7 @@ def login() -> None:
                }
     result = session.post(LOGIN_URL, data=payload)
     handle_errors(result)
-    if is_user_logged_in():
+    if is_user_logged_in(session):
         logging.info(" Successfully logged in.")
         print(f"Welcome, {username}.")
     else:
