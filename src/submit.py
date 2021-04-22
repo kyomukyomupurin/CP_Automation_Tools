@@ -1,9 +1,12 @@
 import requests
 from bs4 import BeautifulSoup
 from pathlib import Path
-from http.cookiejar import LWPCookieJar
+from http.cookiejar import LWPCookieJar, LoadError
 import logging
 from datetime import datetime
+import sys
+
+from login import handle_errors
 
 
 COOKIE_SAVE_LOCATION = "./../../cookie.txt"
@@ -16,20 +19,20 @@ def submit() -> None:
     session = requests.Session()
     if not Path(COOKIE_SAVE_LOCATION).exists():
         logging.error(" Please login before submission.")
-        return
+        sys.exit(1)
     else:
         cookiejar = LWPCookieJar(COOKIE_SAVE_LOCATION)
-        cookiejar.load()
-        logging.info(" Loaded an exsisting cookie from \"%s\"", COOKIE_SAVE_LOCATION)
+        try:
+            cookiejar.load()
+        except LoadError as err:
+            logging.error(f" Load Error: {err}")
+            exit(1)
+        logging.info(" Loaded an exsisting cookie from [%s].", COOKIE_SAVE_LOCATION)
         for cookie in cookiejar:
             logging.info(" This cookie expires at %s", datetime.fromtimestamp(float(str(cookie.expires))))
         session.cookies.update(cookiejar)
     response = session.get(submit_url)
-    try:
-        response.raise_for_status()
-    except:
-        logging.error(" HTTP request for [%s] failed.", submit_url)
-        return
+    handle_errors(response)
     bs = BeautifulSoup(response.text, "html.parser")
     token: str = bs.find(attrs={"name": "csrf_token"}).get("value")
     payload = {"data.TaskScreenName": f"{contest}_{task_id.lower()}",
@@ -38,11 +41,7 @@ def submit() -> None:
                "csrf_token": token
                }
     result = session.post(submit_url, data=payload)
-    try:
-        result.raise_for_status()
-    except:
-        logging.error(" Failed to submit.")
-        return
+    handle_errors(result)
     logging.info(" Successfully submitted!")
 
 

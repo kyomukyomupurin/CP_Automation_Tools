@@ -7,9 +7,12 @@ import string
 import shutil
 import subprocess
 from http.cookiejar import LWPCookieJar, LoadError
+from subprocess import TimeoutExpired
 import logging
 from datetime import datetime
 import re
+
+from login import handle_errors
 
 
 COOKIE_SAVE_LOCATION = "cookie.txt"
@@ -18,17 +21,7 @@ COOKIE_SAVE_LOCATION = "cookie.txt"
 def save_sample(id: str) -> None:
     problem_url = f"https://atcoder.jp/contests/{contest}/tasks/{contest.replace('-', '_')}_{id}"
     response = session.get(problem_url)
-    try:
-        response.raise_for_status()
-    except requests.ConnectionError as err:
-        logging.error(f" ConnectionError: {err}")
-        exit(0)
-    except requests.HTTPError as err:
-        logging.error(f" HTTPError: {err}")
-        exit(0)
-    except:
-        logging.error(" An unexpected error occured.")
-        exit(0)
+    handle_errors(response)
     bs = BeautifulSoup(response.text, "html.parser")
     flag_YesNo: bool = False
     flag_YESNO: bool = False
@@ -96,24 +89,22 @@ if __name__ == "__main__":
     contest: str = args.contest
     if Path(f"{contest}").exists():
         logging.error(" %s is already exists.", contest)
-        exit(0)
+        exit(1)
     print(f"{contest=}")
     session = requests.Session()
     if not Path(COOKIE_SAVE_LOCATION).exists():
         logging.warning(" Please login before downloading problems.")
-        exit(0)
+        exit(1)
     else:
         cookiejar = LWPCookieJar(COOKIE_SAVE_LOCATION)
         try:
             cookiejar.load()
         except LoadError as err:
-            logging.error(f" LoadError: {err}")
-            exit(0)
-    logging.info(" Loaded an exsisting cookie from \"%s\"",
-                 COOKIE_SAVE_LOCATION)
+            logging.error(f" Load Error: {err}")
+            exit(1)
+    logging.info(" Loaded an exsisting cookie from [%s].", COOKIE_SAVE_LOCATION)
     for cookie in cookiejar:
-        logging.info(" This cookie expires at %s",
-                     datetime.fromtimestamp(float(str(cookie.expires))))
+        logging.info(" This cookie expires at %s", datetime.fromtimestamp(float(str(cookie.expires))))
     session.cookies.update(cookiejar)
     number_of_tasks: int = 6
     first: bool = True
@@ -127,9 +118,9 @@ if __name__ == "__main__":
         first = False
     try:
         premake_process.wait(timeout=10)
-    except subprocess.TimeoutExpired as err:
-        logging.error(f" TimeoutExpired: {err}")
+    except TimeoutExpired as err:
+        logging.error(f" Timeout Expired: {err}")
     try:
         Path(f"{contest}/A/taskA").unlink()
     except FileExistsError as err:
-        logging.error(f" FileExistsError: {err}")
+        logging.error(f" File Exists Error: {err}")
