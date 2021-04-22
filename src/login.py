@@ -5,6 +5,7 @@ from http.cookiejar import LWPCookieJar
 import logging
 import sys
 from requests import ConnectionError, HTTPError, URLRequired
+from datetime import datetime
 
 
 HOME_URL = "https://atcoder.jp"
@@ -58,7 +59,9 @@ def login() -> None:
         cookiejar.set_cookie(cookie)
     cookiejar.save()
     logging.info(" Saved cookie to [%s].", COOKIE_SAVE_LOCATION)
-
+    for cookie in cookiejar:
+        if cookie.expires is not None:
+            logging.info(" This cookie expires at %s", datetime.fromtimestamp(float(str(cookie.expires))))
 
 if __name__ == "__main__":
     logging.basicConfig(format="%(levelname)s:%(message)s", level=logging.INFO)
