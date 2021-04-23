@@ -11,8 +11,9 @@ from subprocess import TimeoutExpired
 import logging
 from datetime import datetime
 import re
+import sys
 
-from login import handle_errors
+from login import handle_errors, is_user_logged_in
 
 
 COOKIE_SAVE_LOCATION = "cookie.txt"
@@ -89,23 +90,22 @@ if __name__ == "__main__":
     contest: str = args.contest
     if Path(f"{contest}").exists():
         logging.error(" %s is already exists.", contest)
-        exit(1)
+        sys.exit(1)
     print(f"{contest=}")
-    session = requests.Session()
-    if not Path(COOKIE_SAVE_LOCATION).exists():
-        logging.warning(" Please login before downloading problems.")
-        exit(1)
-    else:
-        cookiejar = LWPCookieJar(COOKIE_SAVE_LOCATION)
-        try:
-            cookiejar.load()
-        except LoadError as err:
-            logging.error(f" Load Error: {err}")
-            exit(1)
+    cookiejar = LWPCookieJar(COOKIE_SAVE_LOCATION)
+    try:
+        cookiejar.load()
+    except LoadError as err:
+        logging.error(f" Load Error: {err}")
+        sys.exit(1)
     logging.info(" Loaded an exsisting cookie from [%s].", COOKIE_SAVE_LOCATION)
     for cookie in cookiejar:
         logging.info(" This cookie expires at %s", datetime.fromtimestamp(float(str(cookie.expires))))
+    session = requests.Session()
     session.cookies.update(cookiejar)
+    if not is_user_logged_in(session):
+        logging.error(" Please login before doanloading problems.")
+        sys.exit(1)
     number_of_tasks: int = 6
     first: bool = True
     for task_id in string.ascii_uppercase[:number_of_tasks]:

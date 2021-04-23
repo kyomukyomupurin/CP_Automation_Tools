@@ -4,9 +4,9 @@ import re
 
 
 def check_sample() -> None:
-    task_id = str(Path.cwd()).split("/")[-1]
-    number = 1
-    passed = True
+    task_id: str = str(Path.cwd()).split("/")[-1]
+    number: int = 1
+    passed: bool = True
     while Path(f"sample/input{number}.txt").exists():
         subprocess.run(f"./task{task_id}", check=True, stdin=Path(
             f"sample/input{number}.txt").open("r"), stdout=Path(f"sample/answer{number}.txt").open("w"))
@@ -25,6 +25,12 @@ def check_sample() -> None:
         number += 1
     if passed:
         print("Passed all sample cases!")
+
+
+    if Path("allowable_error.txt").exists():
+        pass
+    else:
+        pass
 
 
 if __name__ == "__main__":

@@ -6,7 +6,7 @@ import logging
 from datetime import datetime
 import sys
 
-from login import handle_errors
+from login import handle_errors, is_user_logged_in
 
 
 COOKIE_SAVE_LOCATION = "./../../cookie.txt"
@@ -16,21 +16,20 @@ def submit() -> None:
     directory_path = str(Path.cwd()).split("/")
     contest, task_id = directory_path[-2], directory_path[-1]
     submit_url = f"https://atcoder.jp/contests/{contest}/submit"
-    session = requests.Session()
-    if not Path(COOKIE_SAVE_LOCATION).exists():
-        logging.error(" Please login before submission.")
+    cookiejar = LWPCookieJar(COOKIE_SAVE_LOCATION)
+    try:
+        cookiejar.load()
+    except LoadError as err:
+        logging.error(f" Load Error: {err}")
         sys.exit(1)
-    else:
-        cookiejar = LWPCookieJar(COOKIE_SAVE_LOCATION)
-        try:
-            cookiejar.load()
-        except LoadError as err:
-            logging.error(f" Load Error: {err}")
-            exit(1)
-        logging.info(" Loaded an exsisting cookie from [%s].", COOKIE_SAVE_LOCATION)
-        for cookie in cookiejar:
-            logging.info(" This cookie expires at %s", datetime.fromtimestamp(float(str(cookie.expires))))
-        session.cookies.update(cookiejar)
+    logging.info(" Loaded an exsisting cookie from [%s].", COOKIE_SAVE_LOCATION)
+    for cookie in cookiejar:
+        logging.info(" This cookie expires at %s", datetime.fromtimestamp(float(str(cookie.expires))))
+    session = requests.Session()
+    session.cookies.update(cookiejar)
+    if not is_user_logged_in(session):
+        logging.error(" Please login before doanloading problems.")
+        sys.exit(1)
     response = session.get(submit_url)
     handle_errors(response)
     bs = BeautifulSoup(response.text, "html.parser")
