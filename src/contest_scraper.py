@@ -108,6 +108,7 @@ if __name__ == "__main__":
         sys.exit(1)
     number_of_tasks: int = 6
     first: bool = True
+    premake_process = subprocess.Popen(":", shell=True)
     for task_id in string.ascii_uppercase[:number_of_tasks]:
         if not first:
             sleep(1.0)
