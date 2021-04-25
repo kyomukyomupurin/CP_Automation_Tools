@@ -1,14 +1,23 @@
 from pathlib import Path
 import subprocess
-from math import isclose
 
 
 def is_number(x) -> bool:
     try:
-        int(x)
+        float(x)
         return True
     except ValueError:
         return False
+
+
+def is_close(x: float, y: float, tol: float) -> bool:
+    if abs(x - y) < tol:
+        return True
+    if x * y < 0:
+        return False
+    if abs(x - y) / abs(x) < tol:
+        return True
+    return False
 
 
 def check_sample() -> None:
@@ -17,12 +26,12 @@ def check_sample() -> None:
     passed_all_samples: bool = True
     flag_float = Path("allowable_error.txt").exists()
     while Path(f"sample/input{number}.txt").exists():
+        subprocess.run(f"./task{task_id}", check=True, stdin=Path(f"sample/input{number}.txt").open(
+            "r"), stdout=Path(f"sample/answer{number}.txt").open("w"))
         expected: list[str] = Path(
             f"sample/output{number}.txt").read_text().strip().splitlines()
         answer: list[str] = Path(
-            f"sample/output{number}.txt").read_text().strip().splitlines()
-        subprocess.run(f"./task{task_id}", check=True, stdin=Path(f"sample/input{number}.txt").open(
-            "r"), stdout=Path(f"sample/answer{number}.txt").open("w"))
+            f"sample/answer{number}.txt").read_text().strip().splitlines()
         print(f"Sample{number}... ", end="")
         flag_continue = True
         if flag_float:
@@ -33,7 +42,7 @@ def check_sample() -> None:
                     break
                 for element_expected, element_answer in zip(line_expected.split(), line_answer.split()):
                     if is_number(element_expected) and is_number(element_answer):
-                        if not isclose(float(element_expected), float(element_answer), rel_tol=tolerance, abs_tol=tolerance):
+                        if not is_close(float(element_expected), float(element_answer), tolerance):
                             print("NG")
                             print("Input : ")
                             print(
