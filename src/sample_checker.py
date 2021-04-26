@@ -13,9 +13,7 @@ def is_number(x) -> bool:
 def is_close(x: float, y: float, tol: float) -> bool:
     if abs(x - y) < tol:
         return True
-    if x * y < 0:
-        return False
-    if abs(x - y) / abs(x) < tol:
+    if abs(x - y) / max(abs(x), abs(y)) < tol:
         return True
     return False
 
