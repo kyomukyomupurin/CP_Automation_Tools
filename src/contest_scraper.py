@@ -16,11 +16,11 @@ import sys
 from login import handle_errors, is_user_logged_in
 
 
-COOKIE_SAVE_LOCATION = "cookie.txt"
+COOKIE_SAVE_LOCATION: str = "cookie.txt"
 
 
 def save_sample(id: str) -> None:
-    problem_url = f"https://atcoder.jp/contests/{contest}/tasks/{contest.replace('-', '_')}_{id}"
+    problem_url: str = f"https://atcoder.jp/contests/{contest}/tasks/{contest.replace('-', '_')}_{id}"
     response = session.get(problem_url)
     handle_errors(response)
     bs = BeautifulSoup(response.text, "html.parser")

@@ -8,9 +8,9 @@ from requests import ConnectionError, HTTPError, URLRequired
 from datetime import datetime
 
 
-HOME_URL = "https://atcoder.jp"
-LOGIN_URL = "https://atcoder.jp/login"
-COOKIE_SAVE_LOCATION = "cookie.txt"
+HOME_URL: str = "https://atcoder.jp"
+LOGIN_URL: str = "https://atcoder.jp/login"
+COOKIE_SAVE_LOCATION: str = "cookie.txt"
 
 
 def handle_errors(response: requests.Response) -> None:

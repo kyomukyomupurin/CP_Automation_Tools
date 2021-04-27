@@ -22,7 +22,7 @@ def check_sample() -> None:
     task_id: str = str(Path.cwd()).split("/")[-1]
     number: int = 1
     passed_all_samples: bool = True
-    flag_float = Path("allowable_error.txt").exists()
+    flag_float: bool = Path("allowable_error.txt").exists()
     while Path(f"sample/input{number}.txt").exists():
         subprocess.run(f"./task{task_id}", check=True, stdin=Path(f"sample/input{number}.txt").open(
             "r"), stdout=Path(f"sample/answer{number}.txt").open("w"))

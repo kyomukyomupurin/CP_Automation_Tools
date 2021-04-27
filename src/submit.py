@@ -9,13 +9,13 @@ import sys
 from login import handle_errors, is_user_logged_in
 
 
-COOKIE_SAVE_LOCATION = "./../../cookie.txt"
+COOKIE_SAVE_LOCATION: str = "./../../cookie.txt"
 
 
 def submit() -> None:
-    directory_path = str(Path.cwd()).split("/")
+    directory_path: list[str] = str(Path.cwd()).split("/")
     contest, task_id = directory_path[-2], directory_path[-1]
-    submit_url = f"https://atcoder.jp/contests/{contest}/submit"
+    submit_url: str = f"https://atcoder.jp/contests/{contest}/submit"
     cookiejar = LWPCookieJar(COOKIE_SAVE_LOCATION)
     try:
         cookiejar.load()
