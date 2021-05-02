@@ -87,3 +87,4 @@ Automation tools for competitive programming.
 
 - 実行時間制限の取得
 - サンプルチェックの際に TLE 判定できるようにする
+- 出力が空文字列になりうる問題で WA になったときの表示の乱れを直す(例 : zone2021-D)
