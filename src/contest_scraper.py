@@ -85,7 +85,9 @@ def save_sample(id: str) -> None:
 if __name__ == "__main__":
     logging.basicConfig(format="%(levelname)s:%(message)s", level=logging.INFO)
     parser = argparse.ArgumentParser()
-    parser.add_argument("contest")
+    parser.add_argument("contest", help="name of the contest")
+    parser.add_argument("-n", "--number", help="number of tasks")
+    parser.add_argument("-p", "--problem", help="download only specific task")
     args = parser.parse_args()
     contest: str = args.contest
     if Path(f"{contest}").exists():
@@ -107,21 +109,27 @@ if __name__ == "__main__":
         logging.error(" Please login before doanloading problems.")
         sys.exit(1)
     number_of_tasks: int = 6
-    first: bool = True
-    premake_process = subprocess.Popen(":", shell=True)
-    for task_id in string.ascii_uppercase[:number_of_tasks]:
-        if not first:
-            sleep(1.0)
-        save_sample(task_id)
-        if first:
-            premake_process = subprocess.Popen(
-                ["make", "-s", "-C", f"{contest}/{task_id}", "run"])
-        first = False
-    try:
-        premake_process.wait(timeout=10)
-    except TimeoutExpired as err:
-        logging.error(f" Timeout Expired: {err}")
-    try:
-        Path(f"{contest}/A/taskA").unlink()
-    except FileExistsError as err:
-        logging.error(f" File Exists Error: {err}")
+    if args.problem:
+        problem_id: str = args.problem
+        save_sample(problem_id.upper())
+    else:
+        if args.number:
+            number_of_tasks = int(args.number)
+        first: bool = True
+        premake_process = subprocess.Popen(":", shell=True)
+        for task_id in string.ascii_uppercase[:number_of_tasks]:
+            if not first:
+                sleep(1.0)
+            save_sample(task_id)
+            if first:
+                premake_process = subprocess.Popen(
+                    ["make", "-s", "-C", f"{contest}/{task_id}", "run"])
+            first = False
+        try:
+            premake_process.wait(timeout=10)
+        except TimeoutExpired as err:
+            logging.error(f" Timeout Expired: {err}")
+        try:
+            Path(f"{contest}/A/taskA").unlink()
+        except FileExistsError as err:
+            logging.error(f" File Exists Error: {err}")

@@ -2,6 +2,8 @@ from pathlib import Path
 import subprocess
 from subprocess import TimeoutExpired, CalledProcessError
 
+from color_printer import print_ng, print_ok
+
 
 def is_number(x) -> bool:
     try:
@@ -20,7 +22,7 @@ def is_close(x: float, y: float, tol: float) -> bool:
 
 
 def show_details(number: int) -> None:
-    print("NG")
+    print_ng("WA")
     print("Input : ")
     print(Path(f"sample/input{number}.txt").read_text())
     print("Expected : ")
@@ -40,11 +42,11 @@ def check_sample() -> None:
             subprocess.run(f"./task{task_id}", check=True, stdin=Path(f"sample/input{number}.txt").open(
                 "r"), stdout=Path(f"sample/answer{number}.txt").open("w"), timeout=3.0)
         except TimeoutExpired:
-            print("TLE")
+            print_ng("TLE")
             number += 1
             continue
         except CalledProcessError:
-            print("RE")
+            print_ng("RE")
             number += 1
             continue
         expected: list[str] = Path(
@@ -68,7 +70,7 @@ def check_sample() -> None:
             for line_expected, line_answer in zip(expected, answer):
                 if line_expected.strip().split() != line_answer.strip().split():
                     passed_sample = passed_all_samples = False
-        print("OK") if passed_sample else show_details(number)
+        print_ok("AC") if passed_sample else show_details(number)
         number += 1
     if passed_all_samples:
         print(f"Passed all sample cases!")
