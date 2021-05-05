@@ -87,8 +87,5 @@ Automation tools for competitive programming.
 優先度 1~5
 
 - 実行時間制限の取得(1)
-- 単一の問題のダウンロードへの対応(5)
 - 出力が小数かどうかの判断を書き直す(3)
   - 稀に "absolute or relative error" というフレーズが無いことがあるっぽい
-- コンテストの問題数が 6 問ではないときに指定するオプションをつける(4)
-- "OK" とか "NG" とか "TLE" に色をつける(2)
