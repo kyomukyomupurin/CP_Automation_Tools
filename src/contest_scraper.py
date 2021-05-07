@@ -45,19 +45,18 @@ def save_sample(id: str) -> None:
             flag_float: bool = "absolute or relative error" in h3.find_next_sibling(
                 "p").get_text()
             pattern = re.compile(r"10\^{-[0-9]}")
-            for code in codes:
-                if code.get_text(strip=True) == "YES":
-                    flag_YESNO = True
-                if code.get_text(strip=True) == "Yes":
-                    flag_YesNo = True
-            for var in vars:
-                if var.get_text(strip=True) in ["998244353", "998,244,353"]:
-                    flag_998244353 = True
-                if "10^9+7" in var.get_text(strip=True).replace(" ", ""):
-                    flag_1000000007 = True
-                if var.get_text(strip=True) in ["1000000007", "1,000,000,007"]:
-                    flag_1000000007 = True
-                if flag_float:
+            flag_YESNO = any(code.get_text(strip=True)
+                             == "YES" for code in codes)
+            flag_YesNo = any(code.get_text(strip=True)
+                             == "Yes" for code in codes)
+            flag_998244353 = any(var.get_text(strip=True) in [
+                                 "998244353", "998,244,353"] for var in vars)
+            flag_1000000007 = any(var.get_text(strip=True) in [
+                                  "1000000007", "1,000,000,007"] for var in vars)
+            flag_1000000007 = flag_1000000007 or any(
+                "10^9+7" in var.get_text(strip=True).replace(" ", "") for var in vars)
+            if flag_float:
+                for var in vars:
                     allowable_error: str = var.get_text(
                         strip=True).replace(" ", "").strip("()")
                     if pattern.fullmatch(allowable_error):
@@ -100,9 +99,11 @@ if __name__ == "__main__":
     except LoadError as err:
         logging.error(f" Load Error: {err}")
         sys.exit(1)
-    logging.info(" Loaded an exsisting cookie from [%s].", COOKIE_SAVE_LOCATION)
+    logging.info(
+        " Loaded an exsisting cookie from [%s].", COOKIE_SAVE_LOCATION)
     for cookie in cookiejar:
-        logging.info(" This cookie expires at %s", datetime.fromtimestamp(float(str(cookie.expires))))
+        logging.info(" This cookie expires at %s",
+                     datetime.fromtimestamp(float(str(cookie.expires))))
     session = requests.Session()
     session.cookies.update(cookiejar)
     if not is_user_logged_in(session):
