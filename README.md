@@ -11,12 +11,13 @@ Automation tools for competitive programming.
 - サンプル入出力のダウンロード
 - サンプルが合うかチェック
 - 提出
+- 提出結果の取得
 
-## 対応するサイト(予定)
+## 対応サイト
 
 - AtCoder
-- Codeforces
-- LeetCode
+- Codeforces(まだ)
+- LeetCode(まだ)
 
 ## 実装メモ
 
@@ -79,7 +80,9 @@ Automation tools for competitive programming.
 #### ログインと提出
 
 - ```requests.Session()``` でできる
+
 - csrf token はセキュリティのためのワンタイムトークン(Cookie とは別物)
+
 - ログイン時に Cookie を取得してローカルに保存しておく(有効期限は半年くらい？)
 
 #### TO DO
@@ -87,5 +90,67 @@ Automation tools for competitive programming.
 優先度 1~5
 
 - 実行時間制限の取得(1)
+
 - 出力が小数かどうかの判断を書き直す(3)
   - 稀に "absolute or relative error" というフレーズが無いことがあるっぽい
+
+- バイナリ提出機能の実装(3)
+
+- 提出結果の確認機能の実装(4)
+
+## 使い方
+
+### AtCoder
+
+- ログイン
+  - ```python3 login.py```
+  - ユーザ名とパスワードを尋ねられるので入力する
+  - "Successfully logged in as ~~" というメッセージが表示されたら成功
+
+- サンプル入出力のダウンロード
+  - 事前に ```.template/template.cc``` にテンプレートとして使いたいファイルを配置しておく
+    - このとき配置するテンプレートはコンパイル可能なファイルでなければならない(空のファイルとかはだめ)
+  - **```.template/Makefile``` の ```CC```, ```CFLAGS```, ```PYTHON``` については実行環境によって適宜変更しておくこと**
+  - ```python3 contest_scraper.py {contest_name}```
+  - {contest_name} はコンテストトップページの URL の最後の部分(abc200 とか)
+  - ダウンロード完了後に ```contest_scraper``` を実行したディレクトリに {contest_name} というディレクトリが生成される
+  - {contest_name} 以下のディレクトリ構造は下図のよう(B 以降についても B と同様)
+
+.  
+├── A  
+│   ├── Makefile  
+│   ├── sample  
+│   │   ├── input1.txt  
+│   │   ├── input2.txt  
+│   │   ├── output1.txt  
+│   │   └── output2.txt  
+│   ├── taskA  
+│   └── taskA.cc  
+├── B  
+│   ├── Makefile  
+│   ├── sample  
+│   │   ├── input1.txt  
+│   │   ├── input2.txt  
+│   │   ├── input3.txt  
+│   │   ├── output1.txt  
+│   │   ├── output2.txt  
+│   │   └── output3.txt  
+│   └── taskB.cc  
+
+  - ```taskA``` はサンプルダウンロード中に並列で ```taskA.cc``` をコンパイルして生成されたもの
+    - g++ が RAM に載るようにして初回の ```make test``` (後述)の実行速度を高速化するため 
+  - コンテスト全体でなく単一の問題のサンプル入出力をダウンロードしたいときはオプションで ```-p A``` のように指定する
+    - このときは事前コンパイルは実行されない
+    - ```A``` は大文字でも小文字でも構わない
+  - 旧 ABC 等、問題数が 6 問ではないコンテストのサンプル入出力をダウンロードする際はオプションで ```-n 4``` のように指定する
+    - 指定しなくてもリクエストのエラーでスクリプトは停止するが、予測可能なエラーをわざわざ出さなくていい
+
+- サンプルのチェック
+  - ```task[A-F].cc``` のあるディレクトリで ```make test```
+
+- 提出
+  - ```task[A-F].cc``` のあるディレクトリで ```make submit```
+
+- 提出結果の取得
+  - ```task[A-F].cc``` のあるディレクトリで ```make status```
+    - 最新 ```min(6, 総提出数) 件の提出結果を表示する
