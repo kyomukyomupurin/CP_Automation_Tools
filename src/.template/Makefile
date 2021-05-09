@@ -12,3 +12,6 @@ test:
 
 submit:
 	@$(PYTHON) ./../../submit.py
+
+status:
+	@$(PYTHON) ./../../status.py
