@@ -20,11 +20,14 @@ def submit() -> None:
     try:
         cookiejar.load()
     except LoadError as err:
-        logging.error(f" Load Error: {err}")
+        logging.error(" Load Error: %s", err)
         sys.exit(1)
-    logging.info(" Loaded an exsisting cookie from [%s].", COOKIE_SAVE_LOCATION)
+    logging.info(
+        " Loaded an exsisting cookie from [%s].", COOKIE_SAVE_LOCATION)
     for cookie in cookiejar:
-        logging.info(" This cookie expires at %s", datetime.fromtimestamp(float(str(cookie.expires))))
+        if cookie.expires:
+            logging.info(" This cookie expires at %s",
+                         datetime.fromtimestamp(float(cookie.expires)))
     session = requests.Session()
     session.cookies.update(cookiejar)
     if not is_user_logged_in(session):
@@ -33,13 +36,13 @@ def submit() -> None:
     response = session.get(submit_url)
     handle_errors(response)
     bs = BeautifulSoup(response.text, "html.parser")
-    token: str = bs.find(attrs={"name": "csrf_token"}).get("value")
-    payload = {"data.TaskScreenName": f"{contest}_{task_id.lower()}",
-               "data.LanguageId": 4003,
-               "sourceCode": Path(f"task{task_id}.cc").read_text(),
-               "csrf_token": token
-               }
-    result = session.post(submit_url, data=payload)
+    csrf_token: str = bs.find(attrs={"name": "csrf_token"}).get("value")
+    data = {"data.TaskScreenName": f"{contest}_{task_id.lower()}",
+            "data.LanguageId": 4003,
+            "sourceCode": Path(f"task{task_id}.cc").read_text(),
+            "csrf_token": csrf_token
+            }
+    result = session.post(submit_url, data=data)
     handle_errors(result)
     logging.info(" Successfully submitted!")
 

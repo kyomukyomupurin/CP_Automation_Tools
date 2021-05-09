@@ -97,13 +97,13 @@ if __name__ == "__main__":
     try:
         cookiejar.load()
     except LoadError as err:
-        logging.error(f" Load Error: {err}")
+        logging.error(" Load Error: %s", err)
         sys.exit(1)
     logging.info(
         " Loaded an exsisting cookie from [%s].", COOKIE_SAVE_LOCATION)
     for cookie in cookiejar:
-        logging.info(" This cookie expires at %s",
-                     datetime.fromtimestamp(float(str(cookie.expires))))
+        if cookie.expires:
+            logging.info(" This cookie expires at %s", datetime.fromtimestamp(float(cookie.expires)))
     session = requests.Session()
     session.cookies.update(cookiejar)
     if not is_user_logged_in(session):
@@ -129,8 +129,4 @@ if __name__ == "__main__":
         try:
             premake_process.wait(timeout=10)
         except TimeoutExpired as err:
-            logging.error(f" Timeout Expired: {err}")
-        try:
-            Path(f"{contest}/A/taskA").unlink()
-        except FileExistsError as err:
-            logging.error(f" File Exists Error: {err}")
+            logging.error(" Timeout Expired: %s", err)
