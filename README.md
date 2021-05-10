@@ -100,7 +100,18 @@ Automation tools for competitive programming.
 
 ### AtCoder
 
-以下、python の実行コマンドは ```python3``` で統一しているがこれは手元の環境に応じて適切なものを使うこと(ソースコードは Python3.8 以降を想定して書かれている)
+以下、python の実行コマンドは ```python3``` で統一しているがこれは手元の環境に応じて適切なものを使うこと(筆者はソースからビルドした Python3.9 を ```python3.9``` で起動している)
+```pip install``` についても適切なコマンドを使うこと(筆者は ```python3.9 -m pip install hoge``` でインストールした)
+
+- 必要な環境
+  - Python(3.8 以上)
+  - Beautifulsoup
+    - ```pip install beautifulsoup4```
+  - requests
+    - ```pip install requests```
+  - Makefile が使えること
+  - g++
+  - **WSL(Ubuntu 18.04) でしか動作確認していません**
 
 - ログイン
   - ```python3 login.py```
@@ -110,6 +121,17 @@ Automation tools for competitive programming.
 - サンプル入出力のダウンロード
   - 事前に ```.template/template.cc``` にテンプレートとして使いたいファイルを配置しておく
     - このとき配置するテンプレートはコンパイル可能なファイルでなければならない(空のファイルとかはだめ)
+    - オプションで以下の 4 つのテンプレートファイルも配置できる(任意)
+      - ```template_998244353.cc```
+        - mod 998244353 の値を出力する問題用のテンプレート(modint を貼っておくことを想定)
+      - ```template_1000000007.cc```
+        - mod 1000000007 の値を出力する問題用のテンプレート(上に同じ)
+      - ```template_YESNO.cc```
+        - YES/NO で答えを出力する形式の問題用のテンプレート(```void YES(bool flag) {...}``` のような関数を貼る想定)
+      - ```template_YesNo.cc```
+        - Yes/No で答えを出力する形式の問題用のテンプレート(上に同じ)
+    - テンプレートファイルを使用するかどうかはサンプル入出力のダウンロード時に出力形式に特定のフレーズが含まれるかどうかで自動的に判定される
+      - 全ての問題でうまく判定できることは**確認していない**
   - **```.template/Makefile``` の ```CC```, ```CFLAGS```, ```PYTHON``` については実行環境によって適宜変更しておくこと**
   - ```python3 contest_scraper.py {contest_name}```
   - {contest_name} はコンテストトップページの URL の最後の部分(abc200 とか)
