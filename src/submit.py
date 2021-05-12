@@ -13,9 +13,6 @@ COOKIE_SAVE_LOCATION: str = "./../../cookie.txt"
 
 
 def submit() -> None:
-    directory_path: list[str] = str(Path.cwd()).split("/")
-    contest, task_id = directory_path[-2], directory_path[-1]
-    submit_url: str = f"https://atcoder.jp/contests/{contest}/submit"
     cookiejar = LWPCookieJar(COOKIE_SAVE_LOCATION)
     try:
         cookiejar.load()
@@ -33,6 +30,9 @@ def submit() -> None:
     if not is_user_logged_in(session):
         logging.error(" Please login before doanloading problems.")
         sys.exit(1)
+    directory_path: list[str] = str(Path.cwd()).split("/")
+    contest, task_id = directory_path[-2], directory_path[-1]
+    submit_url: str = f"https://atcoder.jp/contests/{contest}/submit"
     response = session.get(submit_url)
     handle_errors(response)
     bs = BeautifulSoup(response.text, "html.parser")
