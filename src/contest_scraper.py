@@ -115,7 +115,10 @@ if __name__ == "__main__":
         save_sample(problem_id.upper())
     else:
         if args.number:
-            number_of_tasks = int(args.number)
+            try:
+                number_of_tasks = int(args.number)
+            except ValueError as err:
+                logging.error(" Value Error: %s", err)
         first: bool = True
         premake_process = subprocess.Popen(":", shell=True)
         for task_id in string.ascii_uppercase[:number_of_tasks]:
@@ -130,3 +133,7 @@ if __name__ == "__main__":
             premake_process.wait(timeout=10)
         except TimeoutExpired as err:
             logging.error(" Timeout Expired: %s", err)
+        try:
+            Path(f"{contest}/A/taskA").unlink()
+        except FileNotFoundError as err:
+            logging.error("File Not Found Error: %s", err)

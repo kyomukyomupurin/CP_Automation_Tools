@@ -6,6 +6,7 @@ import logging
 import sys
 from requests import ConnectionError, HTTPError, URLRequired
 from datetime import datetime
+from pathlib import Path
 
 
 HOME_URL: str = "https://atcoder.jp"
@@ -60,6 +61,7 @@ def login() -> None:
             logging.info(" This cookie expires at %s",
                          datetime.fromtimestamp(float(cookie.expires)))
     cookiejar.save()
+    Path(COOKIE_SAVE_LOCATION).chmod(0o600)
     logging.info(" Saved cookie to [%s].", COOKIE_SAVE_LOCATION)
 
 
