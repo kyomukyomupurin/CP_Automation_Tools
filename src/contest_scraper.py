@@ -127,7 +127,7 @@ if __name__ == "__main__":
             save_sample(task_id)
             if first:
                 premake_process = subprocess.Popen(
-                    ["make", "-s", "-C", f"{contest}/{task_id}", "run"])
+                    ["make", "-s", "-C", f"{contest}/{task_id}", "debug"])
             first = False
         try:
             premake_process.wait(timeout=10)
