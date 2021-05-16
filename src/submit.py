@@ -39,7 +39,9 @@ def submit() -> None:
     csrf_token: str = bs.find(attrs={"name": "csrf_token"}).get("value")
     data = {"data.TaskScreenName": f"{contest}_{task_id.lower()}",
             "data.LanguageId": 4003,
-            "sourceCode": Path(f"task{task_id}.cc").read_text(),
+            "sourceCode": ("// This code is generated and submitted by [CP_Automation_Tools](https://github.com/kyomukyomupurin/CP_Automation_Tools)\n\n"
+                           f"{Path(f'task{task_id}.cc').read_text()}"
+                           ),
             "csrf_token": csrf_token
             }
     result = session.post(submit_url, data=data)
