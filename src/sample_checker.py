@@ -53,6 +53,10 @@ def check_sample() -> None:
             f"sample/output{number}.txt").read_text().strip().splitlines()
         answer: list[str] = Path(
             f"sample/answer{number}.txt").read_text().strip().splitlines()
+        if len(expected) != len(answer):
+            show_details(number)
+            number += 1
+            continue
         if flag_float:
             tolerance: float = pow(
                 10, int(Path("allowable_error.txt").read_text()))
