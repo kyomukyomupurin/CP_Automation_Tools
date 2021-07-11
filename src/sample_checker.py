@@ -44,10 +44,12 @@ def check_sample() -> None:
         except TimeoutExpired:
             print_ng("TLE")
             number += 1
+            passed_all_samples = False
             continue
         except CalledProcessError:
             print_ng("RE")
             number += 1
+            passed_all_samples = False
             continue
         expected: list[str] = Path(
             f"sample/output{number}.txt").read_text().strip().splitlines()
@@ -56,6 +58,7 @@ def check_sample() -> None:
         if len(expected) != len(answer):
             show_details(number)
             number += 1
+            passed_all_samples = False
             continue
         if flag_float:
             tolerance: float = pow(
